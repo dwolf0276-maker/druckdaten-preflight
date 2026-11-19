@@ -1,0 +1,8 @@
+pymupdf>=1.24
+pikepdf>=9
+numpy
+scipy
+pillow
+reportlab>=4
+requests
+google-auth>=2

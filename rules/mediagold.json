@@ -1,0 +1,52 @@
+{
+  "name": "Media Gold – Specifications: How to prepare a file for print",
+  "source": "rules/mediagold_leitfaden.md",
+  "pdf_only": true,
+  "colour": {
+    "allowed": [
+      "CMYK"
+    ],
+    "tac_max_percent": 300,
+    "tac_tolerance_percent": 2,
+    "tac_warn_min_area_mm2_per_page": 1,
+    "tac_error_min_area_mm2_per_page": 10
+  },
+  "images": {
+    "min_ppi": 300,
+    "warn_below_ppi": 280,
+    "error_below_ppi": 200,
+    "ignore_smaller_than_mm2": 100
+  },
+  "black_text": {
+    "require_pure_k": true,
+    "require_overprint": true
+  },
+  "bleed_mm": 3,
+  "safety_mm": 3,
+  "dielines": {
+    "must_be_spot": true,
+    "must_overprint": true,
+    "spot_name_hints": [
+      "stanz",
+      "stanze",
+      "rill",
+      "rillung",
+      "falz",
+      "kontur",
+      "die",
+      "cut",
+      "crease",
+      "dieline",
+      "cutcontour",
+      "thru-cut"
+    ]
+  },
+  "playing_cards": {
+    "bleed_mm": 3,
+    "safety_mm_white_border": 4,
+    "corner_radius_mm": 5,
+    "separate_front_and_back_files": true,
+    "max_card_edge_mm": 130
+  },
+  "min_line_width_mm": 0.1
+}

@@ -1,6 +1,6 @@
 {
   "_hinweis": "Ordner-IDs aus der Drive-Adresszeile (hinter /folders/). MAKE_PROXY_KEY NICHT hier eintragen, sondern als Umgebungsvariable der Routine.",
   "MAKE_PROXY_URL": "https://hook.eu2.make.com/ph9ml11cxqvfmekwqbswjxosupp210s4",
-  "DRIVE_EINGANG_ID": "",
-  "DRIVE_BERICHTE_ID": ""
+  "DRIVE_EINGANG_ID": "1DrX6E5n2I3beC3gLir0xedhfixWDsnUT",
+  "DRIVE_BERICHTE_ID": "1LrDlUyvt7sazplBx8XCJIRSOT8xNNHVY"
 }

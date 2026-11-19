@@ -31,6 +31,19 @@ COL = {"FEHLER": "#C62828", "WARNUNG": "#E08A00", "HINWEIS": "#555555", "OK": "#
 ORDER = {"FEHLER": 0, "WARNUNG": 1, "RÜCKFRAGE": 2, "HINWEIS": 3, "OK": 4}
 
 
+def _small_jpeg(path, out_pdf, max_px=1100):
+    """Bilder für den Bericht verkleinern (JPEG), damit das PDF klein bleibt (Upload über Make)."""
+    tmp = os.path.join(os.path.dirname(os.path.abspath(out_pdf)), ".bericht_bilder")
+    os.makedirs(tmp, exist_ok=True)
+    dst = os.path.join(tmp, os.path.splitext(os.path.basename(path))[0] + ".jpg")
+    im = PImage.open(path).convert("RGB")
+    im.thumbnail((max_px, max_px))
+    im.save(dst, "JPEG", quality=75, optimize=True)
+    png = dst[:-4] + ".png"
+    im.quantize(colors=128).save(png, optimize=True)
+    return png if os.path.getsize(png) < os.path.getsize(dst) else dst
+
+
 def build_report(data, out_pdf, extra=None):
     """extra: optionale Liste manueller Befunde je Datei: {"datei": ..., "stufe": ..., "titel": ..., "text": ..., "screen": ...}"""
     F, FB = _fonts()
@@ -120,9 +133,10 @@ def build_report(data, out_pdf, extra=None):
         for s in shots:
             if not os.path.exists(s):
                 continue
-            w, h = PImage.open(s).size
+            jpg = _small_jpeg(s, out_pdf)
+            w, h = PImage.open(jpg).size
             sc = min(165 * mm / w, 150 * mm / h)
-            story.append(KeepTogether([Spacer(1, 4), Image(s, w * sc, h * sc), Paragraph(esc(os.path.basename(s)), small)]))
+            story.append(KeepTogether([Spacer(1, 4), Image(jpg, w * sc, h * sc), Paragraph(esc(os.path.basename(s)), small)]))
 
     def footer(c, d):
         c.saveState(); c.setFont(F, 7); c.setFillColor(colors.HexColor("#777777"))

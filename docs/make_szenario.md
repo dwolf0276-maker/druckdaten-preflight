@@ -26,3 +26,11 @@ Steht nach dem Anlegen auf **inaktiv**, bis URL und Token eingetragen sind.
 
 Den Schlüssel nicht weitergeben. Neuer Schlüssel: im Filter von Modul 2 ändern.
 Jeder Klick startet eine neue Sitzung (keine Doppelklick-Sperre); max. 30 Starts/Stunde je Routine.
+
+
+# Make-Szenario „Druckdaten-Prüfung – Drive-Proxy“ (ID 10196457, aktiv)
+Webhook `https://hook.eu2.make.com/ph9ml11cxqvfmekwqbswjxosupp210s4` – wird nur von der Routine aufgerufen.
+- `aktion=api`: Drive-API-Aufruf (nur Pfade unter `/v3/files`) mit der Make-Verbindung „Google Drive connection hey.infigo“,
+  Antwort als JSON. Genutzt für: Ordner auflisten, Ordner anlegen, Link-Freigabe setzen/entfernen.
+- `aktion=upload`: Datei (base64, max. ca. 3,5 MB) in einen Ordner hochladen (Bericht, Screens, befunde.json).
+Gleicher Schlüssel wie beim Start-Szenario; Schlüssel als `MAKE_PROXY_KEY` in der Routine-Umgebung hinterlegen.

@@ -17,7 +17,7 @@ Klick auf Link ──► Make (Webhook, Schlüssel prüfen) ──► POST /rout
 | `preflight/pdfcheck.py` | Messungen: Farbraum, Sonderfarben, Stanzlinien, Schwarzaufbau, Farbauftrag (Rohwerte), Bilder, Beschnitt, Kartenränder |
 | `preflight/run.py` | prüft einen Auftragsordner → `befunde.json`, `Pruefbericht_<Nr>.pdf`, `screens/` |
 | `preflight/report.py` | baut den PDF-Bericht (auch nach manueller Ergänzung neu) |
-| `preflight/gdrive.py` | Drive-Zugriff per Dienstkonto (laden/hochladen) |
+| `preflight/gdrive.py` | Drive-Zugriff über den Make-Drive-Proxy (laden/hochladen) |
 | `rules/mediagold.json` | Grenzwerte; weitere Druckereien als eigene Datei anlegen |
 
 Lokal testen: `pip install -r requirements.txt && python -m preflight.run <ordner> <ausgabe>`
@@ -30,20 +30,23 @@ Lokal testen: `pip install -r requirements.txt && python -m preflight.run <ordne
    PDFs oder ZIP hineinlegen, optional `auftrag.json` (Endformate, siehe `CLAUDE.md`).
 3. Die Ordner-IDs notieren (stehen in der Adresszeile hinter `/folders/`).
 
-### 2. Google-Dienstkonto (damit die Routine große PDFs direkt laden kann)
-1. console.cloud.google.com → Projekt anlegen → „Google Drive API“ aktivieren.
-2. „IAM & Verwaltung → Dienstkonten“ → Dienstkonto anlegen → Schlüssel → JSON herunterladen.
-3. Den Ordner `Druckdaten-Prüfung` in Drive mit der E-Mail-Adresse des Dienstkontos teilen (**Bearbeiter**).
+### 2. Drive-Zugriff über Make (kein Google-Dienstkonto)
+Das Make-Szenario **„Druckdaten-Prüfung – Drive-Proxy“** (aktiv) nutzt die bestehende Make-Verbindung
+„Google Drive connection hey.infigo“. Die Ordner `Druckdaten-Prüfung/01_Eingang` und `02_Berichte` müssen
+in diesem Google-Konto liegen (oder mit ihm geteilt sein). Ordner-IDs in `config/drive.json` eintragen.
+Große PDFs laufen nicht durch Make: Für den Download wird kurz eine Link-Freigabe gesetzt, die Datei direkt
+von Google geladen und die Freigabe sofort wieder entfernt.
 
 ### 3. Routine anlegen (claude.ai/code/routines)
 - **Repository:** dieses Repo.
-- **Umgebung:** Netzwerkzugriff für `googleapis.com`, `oauth2.googleapis.com` und PyPI erlauben;
-  Umgebungsvariablen `GDRIVE_SA_JSON` (Inhalt der JSON-Schlüsseldatei), `GDRIVE_EINGANG_ID`, `GDRIVE_BERICHTE_ID`.
+- **Umgebung:** Netzwerkzugriff für `hook.eu2.make.com`, `drive.usercontent.google.com` und PyPI erlauben;
+  Umgebungsvariable `MAKE_PROXY_KEY` (Zugangsschlüssel des Proxys).
 - **Prompt:** siehe `docs/routine_prompt.md`.
 - **Auslöser:** „Add another trigger → API → Generate token“. URL und Token notieren (Token wird nur einmal angezeigt).
 
 ### 4. Make-Szenario
-Webhook → Filter (Schlüssel) → HTTP-POST an die Routine-URL → Bestätigungsseite. Details: `docs/make_szenario.md`.
+Start: Webhook → Filter (Schlüssel) → HTTP-POST an die Routine-URL → Bestätigungsseite.
+Drive-Proxy: Webhook → Router (API-Aufruf / Upload) → Antwort. Details: `docs/make_szenario.md`.
 Klick-Link: `https://hook.<region>.make.com/<id>?key=<schluessel>&auftrag=287568`
 (ohne `auftrag` → alle neuen Aufträge).
 

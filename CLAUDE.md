@@ -12,7 +12,7 @@ Sprache aller Ausgaben: **Deutsch**. Kundendateien werden **nie verändert**.
 2. **Auftrag bestimmen** aus dem Auslösetext der Routine:
    - „Auftrag 287568“ (oder nur eine Nummer/ein Ordnername) → genau diesen Ordner prüfen
    - leer oder „neu“ → alle Ordner in `01_Eingang`, zu denen es in `02_Berichte` noch keinen Ordner gibt
-3. **Daten holen**
+3. **Daten holen** (Drive-Zugriff läuft über den Make-Drive-Proxy, siehe `preflight/gdrive.py`)
    `python -m preflight.gdrive fetch <auftrag|--neu> /tmp/eingang`
    Gibt es keinen passenden Ordner: kurz melden und beenden.
 4. **Automatische Prüfung** je Auftragsordner

@@ -20,6 +20,7 @@ Klick auf Link ──► Make (Webhook, Schlüssel prüfen) ──► POST /rout
 | `preflight/xentral.py` | holt den Auftrag (Spielbeschreibung) aus Xentral über Make |
 | `preflight/spec.py` | Abgleich Druckdaten ↔ Spielbeschreibung (Bestandteile, Formate, 4/4, Stückzahlen, Geldwerte, Passform) |
 | `preflight/gdrive.py` | Drive-Zugriff über den Make-Drive-Proxy (laden/hochladen) |
+| `docs/stand.md` | **Arbeitsstand, Bausteine, offene Punkte, Änderungsprotokoll – bei jeder Anpassung aktualisieren** |
 | `rules/mediagold.json` | Grenzwerte; weitere Druckereien als eigene Datei anlegen |
 
 Lokal testen: `pip install -r requirements.txt && python -m preflight.run <ordner> <ausgabe>`

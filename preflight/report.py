@@ -73,7 +73,8 @@ def build_report(data, out_pdf, extra=None):
             c[b["stufe"]] = c.get(b["stufe"], 0) + 1
         return c
 
-    nF = sum(counts(r)["FEHLER"] for r in files) + sum(1 for c in data.get("uebergreifend", []) if c[0] == "FEHLER")
+    nF = sum(counts(r)["FEHLER"] for r in files) + sum(1 for c in data.get("uebergreifend", []) if c[0] == "FEHLER") \
+        + sum(1 for z in (data.get("abgleich") or {}).get("zeilen", []) if z["stufe"] == "FEHLER")
     nW = sum(counts(r)["WARNUNG"] for r in files) + sum(1 for c in data.get("uebergreifend", []) if c[0] == "WARNUNG")
     urteil = "nicht druckfreigabefähig" if nF else ("druckfähig mit Hinweisen" if nW else "druckfähig")
 
@@ -103,6 +104,23 @@ def build_report(data, out_pdf, extra=None):
                            ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#B0B8C4")),
                            ("VALIGN", (0, 0), (-1, -1), "TOP")]))
     story.append(t)
+
+    ab = data.get("abgleich")
+    if ab and ab.get("zeilen"):
+        story.append(Paragraph(f"Abgleich mit Spielbeschreibung ({esc(ab.get('quelle', ''))} {esc(ab.get('auftrag') or '')}"
+                               + (f" – {esc(ab['produkt'])}" if ab.get("produkt") else "") + ")", h2))
+        arows = [["Bestandteil", "Soll", "Ist", "Status"]]
+        for z in ab["zeilen"]:
+            st = tag(z["stufe"]) + ("<br/>" + esc(z["text"]) if z.get("text") and z["stufe"] != "OK" else "")
+            arows.append([esc(z["bestandteil"]), esc(z["soll"]), esc(z["ist"]), st])
+        at = Table([[Paragraph(x, cellb if i == 0 else cell) for x in row] for i, row in enumerate(arows)],
+                   colWidths=[34 * mm, 45 * mm, 45 * mm, 46 * mm], repeatRows=1)
+        at.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#E8EDF3")),
+                                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#B0B8C4")),
+                                ("VALIGN", (0, 0), (-1, -1), "TOP")]))
+        story.append(at)
+        if ab.get("ohne_druckdaten"):
+            story.append(Paragraph("Ohne Druckdaten laut Auftrag: " + esc(", ".join(x for x in ab["ohne_druckdaten"] if x)), small))
 
     if data.get("uebergreifend"):
         story.append(Paragraph("Dateiübergreifend", h2))

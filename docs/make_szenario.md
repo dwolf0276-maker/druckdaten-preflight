@@ -34,3 +34,8 @@ Webhook `https://hook.eu2.make.com/ph9ml11cxqvfmekwqbswjxosupp210s4` – wird nu
   Antwort als JSON. Genutzt für: Ordner auflisten, Ordner anlegen, Link-Freigabe setzen/entfernen.
 - `aktion=upload`: Datei (base64, max. ca. 3,5 MB) in einen Ordner hochladen (Bericht, Screens, befunde.json).
 Gleicher Schlüssel wie beim Start-Szenario; Schlüssel als `MAKE_PROXY_KEY` in der Routine-Umgebung hinterlegen.
+
+# Make-Szenario „Druckdaten-Prüfung – Auftragsdaten aus Xentral“ (ID 10200691, aktiv)
+Webhook `https://hook.eu2.make.com/pbgddsxci73db5uwwwsjp59ebenjdwr2` – Aufruf durch die Routine mit
+`{"key": …, "auftragsnummer": "286568"}`. Sucht den Verkaufsauftrag per `documentNumber` in Xentral, lädt die
+Details (inkl. Positionen) und gibt sie komplett als JSON zurück; 404, wenn nicht gefunden.

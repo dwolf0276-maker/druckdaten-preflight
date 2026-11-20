@@ -17,6 +17,8 @@ Klick auf Link ──► Make (Webhook, Schlüssel prüfen) ──► POST /rout
 | `preflight/pdfcheck.py` | Messungen: Farbraum, Sonderfarben, Stanzlinien, Schwarzaufbau, Farbauftrag (Rohwerte), Bilder, Beschnitt, Kartenränder |
 | `preflight/run.py` | prüft einen Auftragsordner → `befunde.json`, `Pruefbericht_<Nr>.pdf`, `screens/` |
 | `preflight/report.py` | baut den PDF-Bericht (auch nach manueller Ergänzung neu) |
+| `preflight/xentral.py` | holt den Auftrag (Spielbeschreibung) aus Xentral über Make |
+| `preflight/spec.py` | Abgleich Druckdaten ↔ Spielbeschreibung (Bestandteile, Formate, 4/4, Stückzahlen, Geldwerte, Passform) |
 | `preflight/gdrive.py` | Drive-Zugriff über den Make-Drive-Proxy (laden/hochladen) |
 | `rules/mediagold.json` | Grenzwerte; weitere Druckereien als eigene Datei anlegen |
 

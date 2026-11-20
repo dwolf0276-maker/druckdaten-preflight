@@ -15,11 +15,20 @@ Sprache aller Ausgaben: **Deutsch**. Kundendateien werden **nie verändert**.
 3. **Daten holen** (Drive-Zugriff läuft über den Make-Drive-Proxy, siehe `preflight/gdrive.py`)
    `python -m preflight.gdrive fetch <auftrag|--neu> /tmp/eingang`
    Gibt es keinen passenden Ordner: kurz melden und beenden.
-4. **Automatische Prüfung** je Auftragsordner
+4. **Spielbeschreibung aus Xentral** je Auftragsordner (Auftragsnummer = Ziffern am Anfang des Ordnernamens)
+   `python -m preflight.xentral <auftragsnummer> "/tmp/ausgabe/<ordner>"`
+   Lies die ausgegebenen Positionstexte und schreibe daraus `"/tmp/ausgabe/<ordner>/spezifikation.json"`
+   nach `docs/spezifikation.md` (Schema + Beispiel). Nur übernehmen, was im Auftrag steht; Unklares in `"unklar"`.
+   Endformate aus der Spezifikation zusätzlich als `auftrag.json` in den Eingangsordner schreiben, falls dort keine liegt
+   (`{"auftrag": "<nr>", "endformate": {"<dateinamen-teil>": [B, H], …}}`).
+   Auftrag nicht gefunden / Webhook-Fehler → als RÜCKFRAGE im Bericht vermerken und ohne Abgleich weitermachen.
+5. **Automatische Prüfung** je Auftragsordner
    `python -m preflight.run "/tmp/eingang/<ordner>" "/tmp/ausgabe/<ordner>"`
+   danach Abgleich mit der Spielbeschreibung:
+   `python -m preflight.spec "/tmp/ausgabe/<ordner>/spezifikation.json" "/tmp/ausgabe/<ordner>/befunde.json"`
    (Regeln: `rules/mediagold.json`; Leitfaden-Text: `rules/mediagold_leitfaden.md`.
    Liegt im Auftragsordner eine `regeln.json`, diese mit `--rules` verwenden.)
-5. **Sichtprüfung** – das Skript misst, du beurteilst. Öffne mit dem Read-Werkzeug:
+6. **Sichtprüfung** – das Skript misst, du beurteilst. Öffne mit dem Read-Werkzeug:
    - jede `*_vorschau.png` und `*_Endformat_und_Sicherheitsabstand.png`
    - jede Farbauftrags- und Rand-Grafik in `screens/`
    Prüfe und ergänze, was das Skript nicht sicher erkennt:
@@ -30,17 +39,23 @@ Sprache aller Ausgaben: **Deutsch**. Kundendateien werden **nie verändert**.
    - fehlende Teile (z. B. Rückseiten, weitere Geldscheine, laut Anleitung genannte Karten)
    - Plausibilität der Formate (Brett gefaltet passt in die Schachtel? Unterteil kleiner als Deckel?)
    - auffällige Tippfehler nur als Hinweis (Inhalt ist Kundensache)
+   - **Abgleich Inhalt ↔ Ausstattung** (wenn spezifikation.json vorhanden): Text der Anleitung extrahieren
+     (`pdftotext`/PyMuPDF) und mit `inhalt_ausstattung` vergleichen – Startkapital/Geldwerte vs. Stückelung,
+     Anzahl Figuren/Würfel/Häuser/Hotels, genannte Kartenarten vs. bestellte Karten. Abweichungen als FEHLER/RÜCKFRAGE.
+   - Schachtelmaße an den Rill-/Stanzlinien messen (Grundfläche, Höhe) und mit `masse_mm` vergleichen;
+     Deckel muss größer sein als Unterteil (ca. 2–3 mm Luft je Seite).
+   - Spielgeld: Wert auf jedem Schein sichtbar prüfen, wenn der Dateiname ihn nicht nennt.
    Falls nötig, eigene Messungen mit PyMuPDF/NumPy (siehe `preflight/pdfcheck.py` als Vorlage).
    **Keine Befunde erfinden** – nur, was gemessen oder sichtbar belegt ist. Falsch-positive
    Skript-Befunde (z. B. Schatten als „Bildauflösung“) begründet herabstufen oder entfernen.
-6. **Bericht fertigstellen**: In `befunde.json` ergänzen
+7. **Bericht fertigstellen**: In `befunde.json` ergänzen
    - `"zusammenfassung"`: 3–6 kurze Sätze (Gesamturteil, wichtigste Korrekturen, Rückfragen)
    - `"manuell"`: Liste `{"datei", "stufe" (FEHLER|WARNUNG|HINWEIS|RÜCKFRAGE), "titel", "text", "screen"}`
    dann `python -m preflight.report "/tmp/ausgabe/<ordner>/befunde.json" "/tmp/ausgabe/<ordner>/Pruefbericht_<auftrag>.pdf"`
    Den fertigen Bericht stichprobenartig rendern und ansehen (`pdftoppm` oder PyMuPDF).
-7. **Zurückschreiben**
-   `python -m preflight.gdrive push "<ordner>" "/tmp/ausgabe/<ordner>"`
-8. **Abschlussmeldung** (letzte Nachricht der Sitzung, Deutsch, knapp):
+8. **Zurückschreiben**
+   `python -m preflight.gdrive push "<ordner>" "/tmp/ausgabe/<ordner>"` (lädt auch spezifikation.json mit hoch)
+9. **Abschlussmeldung** (letzte Nachricht der Sitzung, Deutsch, knapp):
    Auftrag, Anzahl Dateien, Fehler/Warnungen, die 3 wichtigsten Punkte, Ablageort in Drive.
 
 ## Bewertungsmaßstab
